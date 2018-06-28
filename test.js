@@ -12,3 +12,13 @@ Object.keys(radio).forEach(k => {
     console.log(k, radio[k]())
   }
 })
+
+function receive() {
+  radio.read( (err, data, meta) => {
+    if (err) throw err
+    console.log(data.toString('ascii'), JSON.stringify(meta))
+    receive()
+  })
+}
+
+receive()

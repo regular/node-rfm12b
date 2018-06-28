@@ -21,7 +21,30 @@ module.exports = function(opts) {
   radio.close = function() {
     fs.closeSync(rfm12_fd)
   }
+  radio.read = function(cb) {
+    const buffer = new Buffer(260)
+    fs.read(rfm12_fd, buffer, 0, buffer.byteLength, null, (err, bytesRead, buffer) => {
+      if (err) return cb(err)
+      const meta = decodeHeader(buffer[0])
+      cb(null, buffer.slice(2, bytesRead), meta)
+    })
+  }
   return radio
+}
+
+function decodeHeader(h) {
+  const nodeId = h & 0x1f
+  const ack = (h >> 5) & 1
+  const dest = (h >> 6) & 1
+  const ctl = (h >> 7) & 1
+
+  return {
+    wantsACK: !ctl && ack,
+    isACK: ctl && !ack,
+    to: dest ? nodeId : null,
+    from: dest ? null : nodeId
+  }
+
 }
 
 function makeGetterSetter(name, fd) {
