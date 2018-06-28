@@ -22,14 +22,38 @@ module.exports = function(opts) {
     fs.closeSync(rfm12_fd)
   }
   radio.read = function(cb) {
-    const buffer = new Buffer(260)
+    const buffer = Buffer.alloc(260)
     fs.read(rfm12_fd, buffer, 0, buffer.byteLength, null, (err, bytesRead, buffer) => {
       if (err) return cb(err)
       const meta = decodeHeader(buffer[0])
       cb(null, buffer.slice(2, bytesRead), meta)
     })
   }
+  radio.write = function(payload, meta, cb) {
+    if (typeof meta == 'function') {
+      cb = meta; meta = {}
+    }
+    if (typeof payload == 'string') payload = Buffer.from(payload)
+    if (!Buffer.isBuffer(payload)) throw new Error('payload must be Buffer or String')
+    const msg = Buffer.alloc(payload.byteLength + 2)
+    msg[0] = encodeHeader(meta)
+    msg[1] = payload.byteLength
+    payload.copy(msg, 2)
+    //console.error(msg)
+    fs.write(rfm12_fd, msg, 0, msg.byteLength, null, cb)
+  }
   return radio
+}
+
+function encodeHeader(opts) {
+  if (opts.from && opts.to) throw new Error('Can set either "from" or "to" property.')
+  if (opts.isACK && opts.wantsACK) throw new Error('Cat set either "wantsACK" or "isACK" property.')
+  const nodeId = opts.to || opts.from || 0
+  if (nodeId > 31) throw new Error('nodeId must not be greater than 31.')
+  const dest = opts.to ? 1 : 0
+  const ack = opts.wantsACK ? 1 : 0
+  const ctl = opts.isACK ? 1 : 0
+  return (ctl << 7) | (dest << 6) | (ack << 5) | nodeId
 }
 
 function decodeHeader(h) {
@@ -67,14 +91,14 @@ function makeGetterSetter(name, fd) {
 }
 
 function getInt(fd, code) {
-  const b = new Buffer(4);
+  const b =  Buffer.alloc(4);
   const ret = ioctl(fd, code, b);
   if (ret) throw new Error('ioctl failed');
   return b.readInt32LE(0);
 }
 
 function setInt(fd, code, value) {
-  const b = new Buffer(4);
+  const b = Buffer.alloc(4);
   b.writeInt32LE(value, 0);
   const ret = ioctl(fd, code, b);
   if (ret) throw new Error('ioctl failed');
