@@ -1,12 +1,12 @@
 {
-  "name": "rfm-transceiver",
+  "name": "rfm12b",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "jan@lagomorph.de",
   "license": "ISC",
   "dependencies": {
     "ioctl": "^2.0.1",
