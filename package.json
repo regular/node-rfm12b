@@ -1,7 +1,7 @@
 {
   "name": "rfm12b",
   "version": "1.0.0",
-  "description": "",
+  "description": "js bindings for rfm12b-linux kernel module (for HopeRF's digital radio modules)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,7 @@
   "author": "jan@lagomorph.de",
   "license": "ISC",
   "dependencies": {
+    "camel-case": "^3.0.0",
     "ioctl": "^2.0.1",
     "ioctl-enum": "^1.0.7"
   }
