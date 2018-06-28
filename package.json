@@ -10,7 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "camel-case": "^3.0.0",
-    "ioctl": "^2.0.1",
+    "ioctl": "^2.0.1"
+  },
+  "devDependencies": {
     "ioctl-enum": "^1.0.7"
   }
 }
