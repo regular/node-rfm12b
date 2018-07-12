@@ -1,4 +1,4 @@
-const radio = require('./')()
+const radio = require('../')()
 
 const JEE_ID = 13
 const GROUP_ID =19
@@ -13,6 +13,6 @@ Object.keys(radio).forEach(k => {
   }
 })
 
-radio.write(Buffer.from([Number(process.argv[2])]), {to:0}, err => {
+radio.write(Buffer.from([Number(process.argv[2])]), {to:1}, err => {
   if (err) console.error(err,message)
 })
